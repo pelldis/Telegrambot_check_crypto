@@ -25,24 +25,30 @@ def get_ya():
     r1 = requests.get(f"https://ru.investing.com/equities/yandex",headers=header)
     html = BS(r.content, 'html.parser')
     html1 = BS(r1.content, 'html.parser')
+    #acc = html.find("span", id="last_last")
     acc = html.find_all(attrs={"data-test": "instrument-price-last"})
     acc_change = html.find_all(attrs={"data-test": "instrument-price-change-percent"})[0]
     acc_change = str(acc_change)
     acc = str(acc[0])
     acc = re.findall(r'(?<=instrument-price-last">).*(?=</span)', acc)
     acc_change = re.findall(r'(?<=instrument-price-change-percent">).*(?=<)', acc_change)[0]
-    acc_change = re.findall(r'(?<=>).*(?=<)', acc_change)[0]
+    acc_change = acc_change.split("<!-- -->")
+    acc_change = "".join(acc_change[1:-1])
     acc = acc[0]
+    #acc1 = html1.find("span", id="last_last")
     acc1 = html1.find_all(attrs={"data-test": "instrument-price-last"})[0]
     acc1_change = html1.find_all(attrs={"data-test": "instrument-price-change-percent"})[0]
     acc1_change = str(acc1_change)
     acc1 = str(acc1)
     acc1 = re.findall(r'(?<=instrument-price-last">).*(?=<)', acc1)
     acc1_change = re.findall(r'(?<=instrument-price-change-percent">).*(?=<)', acc1_change)[0]
-    acc1_change = re.findall(r'(?<=>).*(?=<)', acc1_change)[0]
+    #(<!-- -->+<!-- -->2,94<!-- -->%)
+    acc1_change = acc1_change.split("<!-- -->") # (,+,2,94,%
+    acc1_change = "".join(acc1_change[1:-1])
     acc1 = acc1[0]
     return_value = f"{acc} руб. {acc_change} %, {acc1} $ {acc1_change} %"
 
+    #return acc.text + ' руб.', acc1.text + ' $'
     return return_value
 
 def get_usd():

@@ -55,16 +55,14 @@ def get_usd():
     header = {'User-agent': 'Chrome/84.0.4147.86'}
     r = requests.get(f"https://ru.investing.com/currencies/usd-rub",headers=header)
     bs = BS(r.content, 'html.parser')
-    bs_test = bs.find_all('div', {'class': 'top bold inlineblock'})
-    bs_change = bs_test[0].get_text().split()
-    bs_change = bs_change[2]
-    html = BS(r.content, 'html.parser')
-    acc = html.find_all(attrs={"id": "last_last"})
-    acc = str(acc[0])
-    acc = re.findall(r'(?<=last_last">).*(?=</span)', acc)
-    acc = acc[0]
-    return_value = f"{acc} руб., {bs_change}"
-    
+    bs_test = bs.find_all('span', {'class': 'text-2xl'})
+    bs_change1 = bs.find_all('span', {'class': 'instrument-price_change-value__jkuml ml-2.5 text-negative-main'})
+    bs_change2 = bs.find_all('span', {'class': 'instrument-price_change-value__jkuml ml-2.5 text-positive-main'})
+    bs_change = bs_change1 or bs_change2
+    bs_change = bs_change[0].get_text()
+    acc = bs_test[0].get_text()
+    return_value = f"{acc} руб., {bs_change}%"
+
     return return_value
 
 def get_weather(city):
